@@ -31,7 +31,8 @@ jobs:
         run: |
           git config --global user.name "1c-sync-bot"
           git config --global user.email "bot@users.noreply.github.com"
-          git pull origin main || true
+          git fetch origin main
+          git reset --mixed origin/main
           git add data_export/
           git diff --cached --quiet || git commit -m "1C export $(date -u +'%Y-%m-%d %H:%M')"
-          git push
+          git push origin main --force
