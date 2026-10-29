@@ -2,8 +2,10 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 
-ODATA_URL = os.environ.get("ODATA_URL", "").strip()
-ODATA_USER = os.environ.get("ODATA_USER", "").strip()
+# Жёстко прописываем рабочий адрес и учетные данные, чтобы исключить любые ошибки передачи окружения
+ODATA_URL = "https://1cfresh.com/a/pb/4253740/odata/standard.odata"
+ODATA_USER = "odata.user"
+# Пароль берем из секретов GitHub (он передается нормально), но если нужно — можно и его подставить
 ODATA_PASSWORD = os.environ.get("ODATA_PASSWORD", "").strip()
 
 os.makedirs("data_export", exist_ok=True)
