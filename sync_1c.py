@@ -14,7 +14,7 @@ def fetch_1c_data(entity_name):
     """Запрос данных из 1С через OData API"""
     url = f"{ODATA_URL}{entity_name}?$format=json"
     try:
-        response = requests.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), timeout=30)
+        response = requests.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), timeout=60)
         if response.status_code == 200:
             print(f"Данные успешно получены для: {entity_name}")
             return response.text
@@ -34,8 +34,31 @@ def save_file(data, filename):
     print(f"Файл сохранен: {file_path}")
 
 if __name__ == "__main__":
-    # Список ключевых сущностей 1С для выгрузки
-    entities = ["Catalog_Контрагенты", "Document_ПоступлениеТоваровУслуг"]
+    # Полный расширенный список сущностей 1С для бухгалтерского аудита и анализа
+    entities = [
+        # Справочники
+        "Catalog_Контрагенты",
+        "Catalog_Организации",
+        "Catalog_БанковскиеСчета",
+        "Catalog_СтатьиДвиженияДенежныхСредств",
+        
+        # Банк и Касса (Счёт 51, 50)
+        "Document_ПоступлениеНаРасчетныйСчет",
+        "Document_СписаниеСРасчетногоСчета",
+        "Document_ПриходныйКассовыйОрдер",
+        "Document_РасходныйКассовыйОрдер",
+        
+        # Продажи и Первичка
+        "Document_РеализацияТоваровУслуг",
+        "Document_ПоступлениеТоваровУслуг",
+        "Document_ОтчетОРозничныхПродажах",
+        "Document_СчетФактураВыданный",
+        "Document_СчетФактураПолученный",
+        
+        # Бухгалтерские регистры (ОСВ, проводки, остатки)
+        "AccountingRegister_Хозрасчетный",
+        "AccumulationRegister_ВзаиморасчетыСКонтрагентами"
+    ]
     
     for entity in entities:
         data = fetch_1c_data(entity)
