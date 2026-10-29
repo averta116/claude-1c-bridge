@@ -2,23 +2,23 @@ name: 1C OData Sync Cron
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # запуск каждые 6 часов
+    - cron: '0 */6 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write  # дает право сохранять файлы обратно в репозиторий
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - run: pip install requests
+      - name: Install dependencies
+        run: pip install requests
 
       - name: Run 1C OData Sync
         env:
@@ -29,8 +29,9 @@ jobs:
 
       - name: Commit export
         run: |
-          git config user.name "1c-sync-bot"
-          git config user.email "1c-sync-bot@users.noreply.github.com"
-          git add data_export
+          git config --global user.name "1c-sync-bot"
+          git config --global user.email "bot@users.noreply.github.com"
+          git pull origin main || true
+          git add data_export/
           git diff --cached --quiet || git commit -m "1C export $(date -u +'%Y-%m-%d %H:%M')"
           git push
