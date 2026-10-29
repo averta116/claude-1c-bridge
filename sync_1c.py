@@ -3,17 +3,20 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-ODATA_URL = os.environ.get("ODATA_URL")
-ODATA_USER = os.environ.get("ODATA_USER")
-ODATA_PASSWORD = os.environ.get("ODATA_PASSWORD")
+ODATA_URL = os.environ.get("ODATA_URL", "").strip()
+ODATA_USER = os.environ.get("ODATA_USER", "").strip()
+ODATA_PASSWORD = os.environ.get("ODATA_PASSWORD", "").strip()
 
 os.makedirs("data_export", exist_ok=True)
 
-# Запрашиваем полный список доступных объектов (метаданных) из 1С
+# Гарантируем правильный слэш на конце URL
+if not ODATA_URL.endswith('/'):
+    ODATA_URL += '/'
+
 url = f"{ODATA_URL}?$format=json"
 
 try:
-    print(f"Отправка запроса к корневому OData URL...")
+    print(f"Отправка запроса к OData URL: {ODATA_URL}")
     response = requests.get(url, auth=HTTPBasicAuth(ODATA_USER, ODATA_PASSWORD), timeout=30)
     print(f"Ответ сервера: {response.status_code}")
     
