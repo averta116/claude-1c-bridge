@@ -9,23 +9,21 @@ ODATA_PASSWORD = os.environ.get("ODATA_PASSWORD")
 
 os.makedirs("data_export", exist_ok=True)
 
-# Полный набор для глубокого аудита бухгалтерии
+# Используем только стандартные английские имена метаданных OData для 1С
 entities = [
-    "Catalog_Контрагенты",
-    "Catalog_БанковскиеСчета",
-    "Catalog_Организации",
-    "Document_СписаниеСРасчетногоСчета",
-    "Document_ПоступлениеНаРасчетныйСчета",
-    "Document_ПриходныйКассовыйОрдер",
-    "Document_РасходныйКассовыйОрдер",
-    "Document_ПоступлениеТоваровУслуг",
-    "Document_РеализацияТоваровУслуг",
-    "AccumulationRegister_Закупки",
-    "AccountingRegister_Хозрасчетный"
+    "Catalog_Counterparties",
+    "Catalog_BankAccounts",
+    "Catalog_Organizations",
+    "Document_CashPayment",
+    "Document_CashReceipt",
+    "Document_SettlementReceipt",
+    "Document_SettlementPayment",
+    "Document_PurchaseInvoice",
+    "Document_SalesInvoice"
 ]
 
 for entity in entities:
-    url = f"{ODATA_URL}{entity}?$format=json&$top=500"
+    url = f"{ODATA_URL}{entity}?$format=json&$top=100"
     try:
         response = requests.get(url, auth=HTTPBasicAuth(ODATA_USER, ODATA_PASSWORD), timeout=30)
         if response.status_code == 200:
