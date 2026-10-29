@@ -1,0 +1,27 @@
+name: 1C OData Sync Cron
+
+on:
+  schedule:
+    # Запуск каждые 6 часов
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Возможность запустить вручную кнопкой
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run 1C OData Sync
+        run: python sync_1c.py
