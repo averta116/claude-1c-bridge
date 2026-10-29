@@ -9,32 +9,23 @@ ODATA_PASSWORD = os.environ.get("ODATA_PASSWORD")
 
 os.makedirs("data_export", exist_ok=True)
 
-entities = [
-    "Catalog_Контрагенты",
-    "Catalog_БанковскиеСчета",
-    "Document_СписаниеСРасчетногоСчета",
-    "Document_ПоступлениеНаРасчетныйСчет",
-    "Document_ПриходныйКассовыйОрдер",
-    "Document_РасходныйКассовыйОрдер",
-    "AccumulationRegister_Закупки"
-]
+# Запрашиваем полный список доступных объектов (метаданных) из 1С
+url = f"{ODATA_URL}?$format=json"
 
-success_count = 0
-for entity in entities:
-    url = f"{ODATA_URL}{entity}?$format=json&$top=100"
-    try:
-        response = requests.get(url, auth=HTTPBasicAuth(ODATA_USER, ODATA_PASSWORD), timeout=30)
-        if response.status_code == 200:
-            data = response.json()
-            with open(f"data_export/{entity}.json", "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f"Успешно выгружено: {entity}")
-            success_count += 1
-        else:
-            print(f"Пропуск {entity}: статус {response.status_code}")
-    except Exception as e:
-        print(f"Ошибка для {entity}: {e}")
-
-# Создаем служебный файл, чтобы папка точно не была пустой для коммита
-with open("data_export/_status.json", "w", encoding="utf-8") as f:
-    json.dump({"success_count": success_count}, f)
+try:
+    print(f"Отправка запроса к корневому OData URL...")
+    response = requests.get(url, auth=HTTPBasicAuth(ODATA_USER, ODATA_PASSWORD), timeout=30)
+    print(f"Ответ сервера: {response.status_code}")
+    
+    if response.status_code == 200:
+        data = response.json()
+        with open("data_export/_metadata_schema.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print("УСПЕХ: Полный список доступных сущностей 1С сохранен в _metadata_schema.json")
+    else:
+        print(f"ОШИБКА: Сервер вернул код {response.status_code}. Текст: {response.text[:200]}")
+        with open("data_export/_status.json", "w", encoding="utf-8") as f:
+            json.dump({"error_code": response.status_code}, f)
+            
+except Exception as e:
+    print(f"ИСКЛЮЧЕНИЕ: {e}")
